@@ -34,7 +34,7 @@ class User(db.Model):
     email = db.Column(db.String(50))
     address = db.Column(db.String(50))
     phone = db.Column(db.String(50))
-    post = db.relationship("Blogpost")
+    post = db.relationship("BlogPost")
 
 
 class BlogPost(db.Model):
