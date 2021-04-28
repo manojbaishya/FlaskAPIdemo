@@ -1,11 +1,15 @@
 from datetime import datetime
 from sqlite3 import Connection as SQLite3Connection
+from types import SimpleNamespace as struct
 
+from flask import Flask, jsonify, render_template, request
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 
-from flask import Flask, render_template, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
+# ------------------------------- Local Imports ------------------------------ #
+import linked_list
+import hash_table
 
 
 # ======= sqlite3 foreign key constraint =======
@@ -34,7 +38,7 @@ class User(db.Model):
     email = db.Column(db.String(50))
     address = db.Column(db.String(50))
     phone = db.Column(db.String(50))
-    post = db.relationship("BlogPost")
+    post = db.relationship("BlogPost", cascade="all, delete")
 
 
 class BlogPost(db.Model):
@@ -70,27 +74,106 @@ def create_user():
 
 @app.route("/user/descending_id", methods=["GET"])
 def get_all_users_descending():
-    pass
+    users = User.query.all()
+
+    users_llist = linked_list.LinkedList()
+
+    for user in users:
+        users_llist.insert_beginning(
+            {
+                "id": user.id,
+                "name": user.name,
+                "email": user.email,
+                "address": user.address,
+                "phone": user.phone,
+            }
+        )
+
+    return jsonify(users_llist.to_list()), 200
 
 
 @app.route("/user/ascending_id", methods=["GET"])
 def get_all_users_ascending():
-    pass
+    users = User.query.all()
+
+    users_llist = linked_list.LinkedList()
+
+    for user in users:
+        users_llist.append(
+            {
+                "id": user.id,
+                "name": user.name,
+                "email": user.email,
+                "address": user.address,
+                "phone": user.phone,
+            }
+        )
+
+    return jsonify(users_llist.to_list()), 200
+
+
+def compare_id(data, user_id):
+    return True if data["id"] == user_id else False
 
 
 @app.route("/user/<user_id>", methods=["GET"])
 def get_one_user(user_id):
-    pass
+    users = User.query.all()
+
+    users_llist = linked_list.LinkedList()
+
+    for user in users:
+        users_llist.append(
+            data={
+                "id": user.id,
+                "name": user.name,
+                "email": user.email,
+                "address": user.address,
+                "phone": user.phone,
+            }
+        )
+
+    target_user = users_llist.search(attr=int(user_id), match=compare_id)
+
+    if target_user is not None:
+        return jsonify(target_user), 200
+    else:
+        return jsonify({"message": "User not found!"}), 400
 
 
 @app.route("/user/<user_id>", methods=["DELETE"])
 def delete_user(user_id):
-    pass
+    user_to_delete = User.query.filter_by(id=user_id).first()
+    db.session.delete(user_to_delete)
+    db.session.commit()
+    return jsonify({"message": "User deleted."}), 200
 
 
 @app.route("/blog_post/<user_id>", methods=["POST"])
 def create_blog_post(user_id):
-    pass
+    data = request.get_json()
+
+    user = User.query.filter_by(id=user_id).first()
+
+    if not user:
+        return jsonify({"message": "User does not exist."}), 400
+
+    blogposts = hash_table.HashTable(10)
+    post = struct(title=data["title"], body=data["body"], date=now, user_id=user_id)
+
+    blogposts.insert(key=user.name, value=post)
+
+    newPost = BlogPost(
+        title=data["title"], body=data["body"], date=now, user_id=user_id
+    )
+
+    db.session.add(newPost)
+    db.session.commit()
+
+    return (
+        jsonify({"message": f"Blogpost successfully added for user {user.name}!"}),
+        200,
+    )
 
 
 @app.route("/user/<user_id>", methods=["GET"])

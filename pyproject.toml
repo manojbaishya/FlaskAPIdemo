@@ -17,6 +17,12 @@ flake8 = "^3.9.1"
 flake8-flask = "^0.9.3"
 pylint-flask-sqlalchemy = "^0.2.0"
 ipython = "^7.22.0"
+Faker = "^8.1.1"
+pyproject-flake8 = "^0.0.1-alpha.2"
+tomlkit = "^0.7.0"
+
+[tool.pyright]
+exclude = [".venv"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
