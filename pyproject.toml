@@ -20,6 +20,7 @@ ipython = "^7.22.0"
 Faker = "^8.1.1"
 pyproject-flake8 = "^0.0.1-alpha.2"
 tomlkit = "^0.7.0"
+rstviewer = "^0.0.8"
 
 [tool.pyright]
 exclude = [".venv"]
