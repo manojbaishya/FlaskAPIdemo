@@ -620,6 +620,17 @@ Genshi = ">=0.7"
 Pygments = ">=2.5"
 
 [[package]]
+name = "rstcheck"
+version = "3.3.1"
+description = "Checks syntax of reStructuredText and code blocks nested within it"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+docutils = ">=0.7"
+
+[[package]]
 name = "rstviewer"
 version = "0.0.8"
 description = "An in-browser RST viewer with live updating"
@@ -780,7 +791,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "dabad24684bc3d61babe05b290ffd6e19eab61c3b7280cd2dfbceabcfa6237e6"
+content-hash = "e1135cb0c80d16651ceb5fd345ce38fbf93f20d15563efa0015d32136f7ce0f2"
 
 [metadata.files]
 aiohttp = [
@@ -1224,6 +1235,9 @@ regex = [
 rst2html5 = [
     {file = "rst2html5-2.0-py3-none-any.whl", hash = "sha256:6435a084773ac50bb6edeb6d2b22a8da177b4c095b3eb40b7480852e97dbb738"},
     {file = "rst2html5-2.0.tar.gz", hash = "sha256:1238e36bf7e6eb05d37fd62d8c2619b0d0c1f17e6802dc8fa1422c6050ee65f7"},
+]
+rstcheck = [
+    {file = "rstcheck-3.3.1.tar.gz", hash = "sha256:92c4f79256a54270e0402ba16a2f92d0b3c15c8f4410cb9c57127067c215741f"},
 ]
 rstviewer = [
     {file = "rstviewer-0.0.8.tar.gz", hash = "sha256:f6e6588ecd3ffc92c948c3f5963d541bf1c9301ab6bbaac64c22fef745febd7a"},
