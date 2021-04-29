@@ -37,21 +37,6 @@ class LinkedList:
         self.length: int = 0
         self.match_fnc = None
 
-    def traverse_list(self):
-        """
-        traverse_list demo logic for traversing the linked list
-
-        Template for other methods.
-        """
-        cursor = self.head
-        if cursor is None:
-            # raise error message: List is empty
-            return
-        else:
-            while cursor is not None:
-                # do something with node.data pointed to by cursor
-                cursor = cursor.next_node
-
     def append(self, data=None, node: Node = None):
 
         if data is None and node is not None:
@@ -105,6 +90,20 @@ class LinkedList:
                 )
             )
 
+    def remove_head(self):
+        if self.head is None:
+            return None
+
+        removed_node = self.head
+        # Head removed by garbage collection
+        self.head = self.head.next_node
+
+        if self.head is None:
+            self.end = None
+
+        self.length -= 1
+        return removed_node.data
+
     def search(self, attr, match: Callable):
         cursor = self.head
         if cursor is None:
@@ -115,6 +114,21 @@ class LinkedList:
                     return cursor.data
                 cursor = cursor.next_node
         return None
+
+    def traverse_list(self):
+        """
+        traverse_list demo logic for traversing the linked list
+
+        Template for other methods.
+        """
+        cursor = self.head
+        if cursor is None:
+            # raise error message: List is empty
+            return
+        else:
+            while cursor is not None:
+                # do something with node.data pointed to by cursor
+                cursor = cursor.next_node
 
     def print(self):
         """

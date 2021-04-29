@@ -13,6 +13,7 @@ from sqlalchemy.engine import Engine
 import linked_list
 import hash_table
 import binary_search_tree
+import stack_queue
 
 
 # ======= sqlite3 foreign key constraint =======
@@ -164,11 +165,25 @@ def create_blog_post(user_id):
     blogposts = hash_table.HashTable(10)
     post = struct(title=data["title"], body=data["body"], date=now, user_id=user_id)
 
+    # Demo code to insert into the hashtable
     blogposts.insert(key=user.name, value=post)
-
+    # Demo code to search the hashtable
+    content = blogposts.search(key=user.name)
     newPost = BlogPost(
-        title=data["title"], body=data["body"], date=now, user_id=user_id
+        title=content.title,
+        body=content.body,
+        date=content.date,
+        user_id=content.user_id,
     )
+
+    """Alternative way to insert (DIRECT):
+    newPost = BlogPost(
+        title=data["title"],
+        body=data["body"],
+        date=now,
+        user_id=user_id
+    )
+    """
 
     db.session.add(newPost)
     db.session.commit()
@@ -223,9 +238,59 @@ def get_one_blog_post(blogpost_id):
         return jsonify(target_post), 200
 
 
-@app.route("/user/<user_id>", methods=["GET"])
+@app.route("/user/blog_post/<user_id>", methods=["POST"])
+def insert_multiple_blogposts(user_id):
+    blogposts = request.get_json()
+
+    user = User.query.filter_by(id=user_id).first()
+
+    if not user:
+        return jsonify({"message": "User does not exist."}), 400
+
+    post_queue = stack_queue.Queue()
+
+    for post in blogposts:
+        post_queue.enqueue(data=post)
+
+    for _ in range(post_queue.length):
+        post = post_queue.dequeue()
+        record = BlogPost(
+            title=post["title"], body=post["body"], date=now, user_id=user_id
+        )
+
+        db.session.add(record)
+        db.session.commit()
+
+    return (
+        jsonify(
+            {
+                "message": f"{len(blogposts)} blogpost/s successfully added for user {user.name}!"
+            }
+        ),
+        200,
+    )
+
+
+@app.route("/user/blog_post/<user_id>", methods=["GET"])
 def get_all_blog_posts(user_id):
     pass
+
+
+@app.route("/blog_post/delete_last_ten", methods=["DELETE"])
+def delete_last_ten_blogposts():
+    blogposts = BlogPost.query.all()
+
+    post_stack = stack_queue.Stack()
+
+    for post in blogposts:
+        post_stack.push(post)
+
+    for _ in range(10):
+        post_to_delete = post_stack.pop()
+        db.session.delete(post_to_delete)
+        db.session.commit()
+
+    return jsonify({"message": "Deleted last ten blog posts."}), 200
 
 
 @app.route("/blog_post/<blogpost_id>", methods=["DELETE"])
