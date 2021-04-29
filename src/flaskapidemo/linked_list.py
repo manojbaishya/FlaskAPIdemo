@@ -52,26 +52,6 @@ class LinkedList:
                 # do something with node.data pointed to by cursor
                 cursor = cursor.next_node
 
-    def print(self):
-        """
-        print_list Print all elements in the list.
-
-        Print all elements in the list.
-        """
-        ll_string = ""
-
-        node = self.head
-        if node is None:
-            print("List is empty.")
-        else:
-            while node is not None:
-                ll_string += f"{str(node.data)} -> "
-                if node.next_node is None:
-                    ll_string += "END"
-                node = node.next_node
-
-            print(ll_string)
-
     def append(self, data=None, node: Node = None):
 
         if data is None and node is not None:
@@ -135,6 +115,26 @@ class LinkedList:
                     return cursor.data
                 cursor = cursor.next_node
         return None
+
+    def print(self):
+        """
+        print_list Print all elements in the list.
+
+        Print all elements in the list.
+        """
+        ll_string = ""
+
+        node = self.head
+        if node is None:
+            print("List is empty.")
+        else:
+            while node is not None:
+                ll_string += f"{str(node.data)} -> "
+                if node.next_node is None:
+                    ll_string += "END"
+                node = node.next_node
+
+            print(ll_string)
 
     def to_list(self):
         list_repr = []

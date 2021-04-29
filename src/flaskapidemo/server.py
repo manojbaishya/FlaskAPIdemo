@@ -1,4 +1,5 @@
 from datetime import datetime
+import random
 from sqlite3 import Connection as SQLite3Connection
 from types import SimpleNamespace as struct
 
@@ -7,9 +8,11 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 
+
 # ------------------------------- Local Imports ------------------------------ #
 import linked_list
 import hash_table
+import binary_search_tree
 
 
 # ======= sqlite3 foreign key constraint =======
@@ -176,13 +179,62 @@ def create_blog_post(user_id):
     )
 
 
+def compare_post_id(probe, cursor):
+    if probe["id"] < cursor["id"]:
+        return -1
+    elif probe["id"] > cursor["id"]:
+        return 1
+    elif probe["id"] == cursor["id"]:
+        return 0
+
+
+def compare_post_id_by_key(blogpost_id, cursor):
+    if blogpost_id < cursor["id"]:
+        return -1
+    elif blogpost_id > cursor["id"]:
+        return 1
+    elif blogpost_id == cursor["id"]:
+        return 0
+
+
+@app.route("/blog_post/<blogpost_id>", methods=["GET"])
+def get_one_blog_post(blogpost_id):
+    blog_posts = BlogPost.query.all()
+    random.shuffle(blog_posts)
+
+    bst = binary_search_tree.BinarySearchTree()
+
+    for post in blog_posts:
+        bst.insert(
+            data={
+                "id": post.id,
+                "title": post.title,
+                "body": post.body,
+                "user_id": post.user_id,
+            },
+            compare=compare_post_id,
+        )
+
+    target_post = bst.search(key=int(blogpost_id), compare=compare_post_id_by_key)
+
+    if target_post is None:
+        return jsonify({"message": "Blog post does not exist."}), 400
+    else:
+        return jsonify(target_post), 200
+
+
 @app.route("/user/<user_id>", methods=["GET"])
 def get_all_blog_posts(user_id):
     pass
 
 
+@app.route("/blog_post/<blogpost_id>", methods=["DELETE"])
+def delete_one_blog_post(user_id):
+    pass
+
+
 @app.route("/user/<user_id>", methods=["DELETE"])
-def delete_blog_posts(user_id):
+def delete_all_blog_posts(user_id):
     pass
 
 
